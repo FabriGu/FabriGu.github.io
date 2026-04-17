@@ -1,0 +1,56 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Creative technologist building at the intersection of AI, hardware, and interactive art." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://fabrigu.github.io" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@fabricated_it" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen">
+    <nav class="fixed top-0 w-full z-50 bg-purple-950/80 backdrop-blur-md border-b border-purple-700/20">
+      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="text-lg font-semibold gradient-text hover:opacity-80 transition-opacity">
+          fabri ~
+        </a>
+        <div class="flex gap-6 text-sm">
+          <a href="/" class="text-purple-300 hover:text-purple-100 transition-colors">home</a>
+          <a href="/projects" class="text-purple-300 hover:text-purple-100 transition-colors">projects</a>
+          <a href="/about" class="text-purple-300 hover:text-purple-100 transition-colors">about</a>
+          <a href="https://github.com/FabriGu" class="text-purple-300 hover:text-purple-100 transition-colors" target="_blank">github</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="pt-20">
+      <slot />
+    </main>
+
+    <footer class="border-t border-purple-700/20 mt-24">
+      <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-purple-400">
+        <p>made with curiosity by fabrizio guccione</p>
+        <div class="flex gap-4">
+          <a href="https://www.linkedin.com/in/fabriziog/" class="hover:text-purple-200 transition-colors" target="_blank">linkedin</a>
+          <a href="https://x.com/fabricated_it" class="hover:text-purple-200 transition-colors" target="_blank">x</a>
+          <a href="https://www.instagram.com/fabricated.it/" class="hover:text-purple-200 transition-colors" target="_blank">instagram</a>
+          <a href="https://github.com/FabriGu" class="hover:text-purple-200 transition-colors" target="_blank">github</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
