@@ -4,9 +4,10 @@ import { ViewTransitions } from 'astro:transitions';
 interface Props {
   title: string;
   description?: string;
+  toc?: { id: string; text: string; level: number }[];
 }
 
-const { title, description = "Fabrizio Guccione — Embedded Intelligence Designer. AI-driven interactive systems, physical computing, fabrication." } = Astro.props;
+const { title, description = "Fabrizio Guccione — Embedded Intelligence Designer.", toc = [] } = Astro.props;
 ---
 
 <!doctype html>
@@ -15,64 +16,93 @@ const { title, description = "Fabrizio Guccione — Embedded Intelligence Design
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@fabricated_it" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <ViewTransitions />
   </head>
-  <body class="min-h-screen">
-
-    <!-- Top bar -->
-    <nav class="border-b border-[var(--wiki-border)] bg-[var(--wiki-surface)]">
-      <div class="max-w-[960px] mx-auto px-6 py-2.5 flex items-center justify-between text-sm">
-        <a href="/" class="font-serif text-base font-bold text-[var(--wiki-link)] hover:text-white transition-colors" transition:name="logo">
-          fabripedia
-        </a>
-        <div class="flex gap-5 text-[var(--wiki-text-dim)]">
-          <a href="/" class="hover:text-[var(--wiki-text)] transition-colors">article</a>
-          <a href="/projects" class="hover:text-[var(--wiki-text)] transition-colors">all projects</a>
-          <a href="/reading" class="hover:text-[var(--wiki-text)] transition-colors">reading list</a>
-          <a href="https://github.com/FabriGu" class="hover:text-[var(--wiki-text)] transition-colors" target="_blank" rel="noopener">github</a>
+  <body>
+    <!-- Header -->
+    <header class="wiki-header">
+      <a href="/" class="wiki-logo">
+        <div>
+          <span class="wiki-logo-text">Fabripedia</span>
+          <span class="wiki-logo-sub">the personal encyclopedia</span>
         </div>
+      </a>
+      <div class="wiki-header-links">
+        <a href="https://guccione.work" target="_blank" rel="noopener">Portfolio</a>
+        <a href="https://github.com/FabriGu" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/fabriziog/" target="_blank" rel="noopener">LinkedIn</a>
       </div>
-    </nav>
+    </header>
 
-    <main class="max-w-[960px] mx-auto px-6 py-8">
-      <slot />
-    </main>
+    <!-- Page grid -->
+    <div class="wiki-page">
 
-    <footer class="border-t border-[var(--wiki-border)] mt-16">
-      <div class="max-w-[960px] mx-auto px-6 py-6 text-xs text-[var(--wiki-text-dim)] flex flex-col sm:flex-row justify-between gap-3">
-        <p>This page was last edited on {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
-        <div class="flex gap-4">
-          <a href="https://www.linkedin.com/in/fabriziog/" class="wiki-link" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="https://x.com/fabricated_it" class="wiki-link" target="_blank" rel="noopener">X</a>
-          <a href="https://www.instagram.com/fabricated.it/" class="wiki-link" target="_blank" rel="noopener">Instagram</a>
-          <a href="https://guccione.work" class="wiki-link" target="_blank" rel="noopener">Portfolio</a>
-        </div>
+      <!-- Left sidebar: Table of Contents -->
+      <aside class="wiki-sidebar">
+        {toc.length > 0 && (
+          <div>
+            <div class="toc-heading">Contents</div>
+            <ul class="toc-list">
+              <li><a href="#">(Top)</a></li>
+              {toc.map(item => (
+                <li>
+                  {item.level === 2 ? (
+                    <a href={`#${item.id}`}>{item.text}</a>
+                  ) : (
+                    <ul class="toc-sub"><li><a href={`#${item.id}`}>{item.text}</a></li></ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+
+      <!-- Content area -->
+      <div class="wiki-content">
+        <slot />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="wiki-footer">
+      <div>This page was last edited on {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}.</div>
+      <div class="wiki-footer-links">
+        <a href="https://guccione.work">Portfolio</a>
+        <a href="https://github.com/FabriGu">GitHub</a>
+        <a href="https://www.linkedin.com/in/fabriziog/">LinkedIn</a>
+        <a href="https://x.com/fabricated_it">X</a>
+        <a href="https://www.instagram.com/fabricated.it/">Instagram</a>
       </div>
     </footer>
 
+    <!-- Scroll spy for TOC highlighting -->
     <script>
-      function initReveal() {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-                observer.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-        );
-        document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+      function initScrollSpy() {
+        const links = document.querySelectorAll('.toc-list a');
+        const sections = Array.from(links).map(link => {
+          const id = link.getAttribute('href')?.replace('#', '');
+          return id ? document.getElementById(id) : null;
+        }).filter(Boolean);
+
+        function onScroll() {
+          let current = '';
+          for (const section of sections) {
+            if (section && section.getBoundingClientRect().top <= 100) {
+              current = section.id;
+            }
+          }
+          links.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+          });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
       }
-      initReveal();
-      document.addEventListener('astro:after-swap', initReveal);
+      initScrollSpy();
+      document.addEventListener('astro:after-swap', initScrollSpy);
     </script>
   </body>
 </html>

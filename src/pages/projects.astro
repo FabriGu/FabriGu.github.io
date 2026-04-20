@@ -9,98 +9,75 @@ const featured = parseFeaturedYaml(yamlText);
 const repos = await getRepos();
 const enriched = enrichRepos(repos, featured);
 const languages = [...new Set(enriched.map(r => r.language).filter(Boolean))].sort() as string[];
+
+const toc = [
+  { id: 'complete-list', text: 'Complete list', level: 2 },
+  ...languages.slice(0, 8).map(l => ({ id: `lang-${l}`, text: l, level: 3 })),
+  { id: 'categories', text: 'Categories', level: 2 },
+];
 ---
 
-<Layout title="All Projects — Fabripedia">
-  <h1 class="font-serif text-3xl font-bold text-white tracking-tight mb-1" data-reveal>
-    List of projects
-  </h1>
-  <p class="text-sm text-[var(--wiki-text-dim)] italic mb-6" data-reveal>
-    From Fabripedia — {enriched.length} original repositories, forks excluded, auto-updated from GitHub
-  </p>
+<Layout title="List of projects — Fabripedia" toc={toc}>
 
-  <div class="toc mb-6" data-reveal>
-    <div class="toc-title">Filter by language</div>
-    <div class="flex flex-wrap gap-2 text-sm" id="filters">
-      <button class="wiki-link font-semibold cursor-pointer" data-filter="all">All</button>
-      {languages.map(lang => (
-        <button class="wiki-link cursor-pointer opacity-70 hover:opacity-100 transition-opacity" data-filter={lang}>
-          {lang}
-        </button>
-      ))}
+  <div class="wiki-tabs">
+    <div class="wiki-tabs-left">
+      <a href="/" class="wiki-tab">Article</a>
+      <a href="/projects" class="wiki-tab active">All projects</a>
+    </div>
+    <div class="wiki-tabs-right">
+      <a href="https://github.com/FabriGu?tab=repositories" class="wiki-tab" target="_blank" rel="noopener">View on GitHub</a>
     </div>
   </div>
 
-  <table class="wiki-table" data-reveal>
-    <thead>
+  <h1 class="wiki-title">List of projects by Fabrizio Guccione</h1>
+  <p class="wiki-subtitle">From Fabripedia, the personal encyclopedia</p>
+
+  <div class="hatnote">
+    This is an auto-generated list of {enriched.length} original repositories. Forks are excluded.
+    Data is refreshed daily from the <a href="https://docs.github.com/rest">GitHub API</a>.
+  </div>
+
+  <p>
+    The following is a list of public software projects by <a href="/">Fabrizio Guccione</a>,
+    maintained on <a href="https://github.com/FabriGu">GitHub</a>. Projects marked with ★ are featured works.
+  </p>
+
+  <h2 id="complete-list" class="wiki-h2">Complete list</h2>
+
+  <table class="wikitable">
+    <tbody>
       <tr>
-        <th>Project</th>
+        <th style="width:25%">Project</th>
         <th>Description</th>
-        <th>Language</th>
-        <th>Category</th>
+        <th style="width:12%">Language</th>
+        <th style="width:12%">Category</th>
       </tr>
-    </thead>
-    <tbody id="project-tbody">
       {enriched.map((repo) => (
-        <tr class="project-row" data-language={repo.language || ''}>
+        <tr>
           <td>
-            <a href={repo.url} class="wiki-link font-medium" target="_blank" rel="noopener">{repo.name}</a>
-            {repo.highlight && <span class="text-xs text-[var(--wiki-accent)] ml-1">★</span>}
+            <a href={repo.url} target="_blank" rel="noopener">{repo.name}</a>
+            {repo.highlight && <span style="color:#7c3aed;margin-left:0.25em;" title="Featured">★</span>}
           </td>
-          <td class="text-[var(--wiki-text-muted)]">{repo.tagline || repo.description || '—'}</td>
+          <td>{repo.tagline || repo.description || '—'}</td>
           <td>
             {repo.language && (
-              <span class="flex items-center gap-1.5 text-[var(--wiki-text-dim)]">
-                <span class="inline-block w-2 h-2 rounded-full" style={`background: ${getLanguageColor(repo.language)}`}></span>
+              <span style={`display:inline-flex;align-items:center;gap:4px;`}>
+                <span style={`width:8px;height:8px;border-radius:50%;background:${getLanguageColor(repo.language)};display:inline-block;`}></span>
                 {repo.language}
               </span>
             )}
           </td>
-          <td class="text-[var(--wiki-text-dim)]">{repo.category || '—'}</td>
+          <td>{repo.category || '—'}</td>
         </tr>
       ))}
     </tbody>
   </table>
 
-  <div class="wiki-categories" data-reveal>
-    <strong>Categories:</strong>
-    {languages.map(lang => (
-      <a href="#" class="cursor-pointer" data-filter-link={lang}>{lang}</a>
+  <div id="categories" class="wiki-categories">
+    <b>Categories</b>:
+    {languages.map((lang, i) => (
+      <><a href={`https://github.com/FabriGu?tab=repositories&q=&type=&language=${lang.toLowerCase()}`} target="_blank" rel="noopener">{lang}</a>{i < languages.length - 1 ? ' · ' : ''}</>
     ))}
   </div>
 
-  <script>
-    const rows = document.querySelectorAll('.project-row');
-    const buttons = document.querySelectorAll('[data-filter]');
-
-    function filterBy(lang: string) {
-      rows.forEach(row => {
-        const el = row as HTMLElement;
-        el.style.display = (lang === 'all' || el.dataset.language === lang) ? '' : 'none';
-      });
-      buttons.forEach(btn => {
-        const b = btn as HTMLElement;
-        if (b.dataset.filter === lang) {
-          b.classList.add('font-semibold');
-          b.classList.remove('opacity-70');
-        } else {
-          b.classList.remove('font-semibold');
-          b.classList.add('opacity-70');
-        }
-      });
-    }
-
-    document.getElementById('filters')?.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('[data-filter]') as HTMLElement;
-      if (btn?.dataset.filter) filterBy(btn.dataset.filter);
-    });
-
-    document.querySelectorAll('[data-filter-link]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        filterBy((link as HTMLElement).dataset.filterLink || 'all');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    });
-  </script>
 </Layout>
