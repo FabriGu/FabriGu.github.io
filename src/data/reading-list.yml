@@ -1,0 +1,33 @@
+# Reading List — add books by ISBN, title, and author
+# Covers are fetched from OpenLibrary at build time
+# status: reading | read | want-to-read
+
+- isbn: "9780262510875"
+  title: "The Design of Everyday Things"
+  author: "Don Norman"
+  status: read
+
+- isbn: "9780262631853"
+  title: "Turtle, Termites, and Traffic Jams"
+  author: "Mitchel Resnick"
+  status: read
+
+- isbn: "9780525510314"
+  title: "The Age of Surveillance Capitalism"
+  author: "Shoshana Zuboff"
+  status: read
+
+- isbn: "9780374533557"
+  title: "Thinking, Fast and Slow"
+  author: "Daniel Kahneman"
+  status: read
+
+- isbn: "9780262680936"
+  title: "The Sciences of the Artificial"
+  author: "Herbert A. Simon"
+  status: want-to-read
+
+- isbn: "9780262542043"
+  title: "The Nature of Code"
+  author: "Daniel Shiffman"
+  status: read

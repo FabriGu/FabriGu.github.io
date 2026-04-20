@@ -1,0 +1,136 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// Parse reading list YAML
+const yamlText = readFileSync(join(process.cwd(), 'src/data/reading-list.yml'), 'utf-8');
+
+interface Book {
+  isbn: string;
+  title: string;
+  author: string;
+  status: 'reading' | 'read' | 'want-to-read';
+  coverUrl: string;
+}
+
+function parseBooks(text: string): Omit<Book, 'coverUrl'>[] {
+  const items: any[] = [];
+  let current: any = null;
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    if (trimmed.startsWith('- isbn:')) {
+      if (current) items.push(current);
+      current = { isbn: trimmed.replace('- isbn:', '').trim().replace(/^"|"$/g, ''), title: '', author: '', status: 'read' };
+    } else if (current && trimmed.startsWith('title:')) {
+      current.title = trimmed.replace('title:', '').trim().replace(/^"|"$/g, '');
+    } else if (current && trimmed.startsWith('author:')) {
+      current.author = trimmed.replace('author:', '').trim().replace(/^"|"$/g, '');
+    } else if (current && trimmed.startsWith('status:')) {
+      current.status = trimmed.replace('status:', '').trim();
+    }
+  }
+  if (current) items.push(current);
+  return items;
+}
+
+const rawBooks = parseBooks(yamlText);
+const books: Book[] = rawBooks.map(b => ({
+  ...b,
+  coverUrl: `https://covers.openlibrary.org/b/isbn/${b.isbn}-M.jpg`,
+}));
+
+const readBooks = books.filter(b => b.status === 'read');
+const readingBooks = books.filter(b => b.status === 'reading');
+const wantBooks = books.filter(b => b.status === 'want-to-read');
+---
+
+<Layout title="Reading List — Fabripedia">
+  <h1 class="font-serif text-3xl font-bold text-white tracking-tight mb-1" data-reveal>
+    Reading list
+  </h1>
+  <p class="text-sm text-[var(--wiki-text-dim)] italic mb-6" data-reveal>
+    From Fabripedia — books that shaped how I think about design, systems, and intelligence
+  </p>
+
+  <div class="hatnote" data-reveal>
+    Covers fetched from <a href="https://openlibrary.org" class="wiki-link" target="_blank" rel="noopener">OpenLibrary</a>.
+    To suggest a book, <a href="https://github.com/FabriGu/FabriGu.github.io/edit/main/src/data/reading-list.yml" class="wiki-link" target="_blank" rel="noopener">edit the list</a>.
+  </div>
+
+  {readingBooks.length > 0 && (
+    <>
+      <h2 class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+        Currently reading
+      </h2>
+      <div class="space-y-4 mb-6" data-reveal>
+        {readingBooks.map(book => (
+          <div class="flex gap-4 items-start">
+            <img src={book.coverUrl} alt={book.title} class="book-cover" loading="lazy" />
+            <div>
+              <p class="font-medium text-white">{book.title}</p>
+              <p class="text-sm text-[var(--wiki-text-muted)]">{book.author}</p>
+              <p class="text-xs text-[var(--wiki-text-dim)] mt-1">ISBN {book.isbn}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
+
+  <h2 class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Read
+  </h2>
+  <table class="wiki-table" data-reveal>
+    <thead>
+      <tr>
+        <th>Cover</th>
+        <th>Title</th>
+        <th>Author</th>
+      </tr>
+    </thead>
+    <tbody>
+      {readBooks.map(book => (
+        <tr>
+          <td><img src={book.coverUrl} alt={book.title} class="book-cover" loading="lazy" /></td>
+          <td class="font-medium text-white align-top">{book.title}</td>
+          <td class="text-[var(--wiki-text-muted)] align-top">{book.author}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  {wantBooks.length > 0 && (
+    <>
+      <h2 class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+        Want to read
+      </h2>
+      <table class="wiki-table" data-reveal>
+        <thead>
+          <tr>
+            <th>Cover</th>
+            <th>Title</th>
+            <th>Author</th>
+          </tr>
+        </thead>
+        <tbody>
+          {wantBooks.map(book => (
+            <tr>
+              <td><img src={book.coverUrl} alt={book.title} class="book-cover" loading="lazy" /></td>
+              <td class="font-medium text-white align-top">{book.title}</td>
+              <td class="text-[var(--wiki-text-muted)] align-top">{book.author}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  )}
+
+  <div class="wiki-categories" data-reveal>
+    <strong>Categories:</strong>
+    <a href="/">Fabrizio Guccione</a> ·
+    <a href="/reading">Books</a> ·
+    <a href="/projects">Projects</a>
+  </div>
+</Layout>

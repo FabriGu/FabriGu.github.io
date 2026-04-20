@@ -3,25 +3,8 @@ export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
-      colors: {
-        bg: {
-          DEFAULT: '#0c0a1a',
-          card: '#14112a',
-          elevated: '#1c1838',
-        },
-        accent: {
-          DEFAULT: '#a78bfa',
-          soft: '#c4b5fd',
-          muted: '#7c3aed',
-          glow: '#8b5cf6',
-        },
-        text: {
-          DEFAULT: '#e2e0eb',
-          muted: '#9490ad',
-          dim: '#6b6789',
-        },
-      },
       fontFamily: {
+        serif: ['"Linux Libertine"', 'Georgia', 'Times', 'serif'],
         sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"Fira Code"', 'ui-monospace', 'monospace'],
       },

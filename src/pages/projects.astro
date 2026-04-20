@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import { getRepos, enrichRepos, parseFeaturedYaml } from '../lib/github';
+import { getRepos, enrichRepos, parseFeaturedYaml, getLanguageColor } from '../lib/github';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -9,73 +8,98 @@ const yamlText = readFileSync(join(process.cwd(), 'src/data/featured.yml'), 'utf
 const featured = parseFeaturedYaml(yamlText);
 const repos = await getRepos();
 const enriched = enrichRepos(repos, featured);
-
 const languages = [...new Set(enriched.map(r => r.language).filter(Boolean))].sort() as string[];
 ---
 
-<Layout title="Projects — Fabrizio Guccione" description="All projects by Fabrizio Guccione. AI, interactive installations, hardware, creative coding.">
-  <section class="max-w-5xl mx-auto px-6 py-24">
-    <p data-reveal class="label mb-3">all work</p>
-    <h1 data-reveal data-reveal-delay="1" class="text-4xl font-bold text-accent-soft tracking-tight mb-2">
-      projects
-    </h1>
-    <p data-reveal data-reveal-delay="2" class="text-text-dim text-sm mb-10">
-      {enriched.length} original repos · auto-updated from GitHub · forks excluded
-    </p>
+<Layout title="All Projects — Fabripedia">
+  <h1 class="font-serif text-3xl font-bold text-white tracking-tight mb-1" data-reveal>
+    List of projects
+  </h1>
+  <p class="text-sm text-[var(--wiki-text-dim)] italic mb-6" data-reveal>
+    From Fabripedia — {enriched.length} original repositories, forks excluded, auto-updated from GitHub
+  </p>
 
-    <!-- Filter chips -->
-    <div data-reveal data-reveal-delay="3" class="flex flex-wrap gap-2 mb-10" id="filters">
-      <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-accent-muted/20 border border-accent-muted/40 text-accent-soft cursor-pointer transition-all duration-200" data-filter="all">all</button>
-      <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-text-dim cursor-pointer hover:text-text-muted hover:border-white/[0.12] transition-all duration-200" data-filter="featured">featured</button>
-      {languages.slice(0, 6).map(lang => (
-        <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-text-dim cursor-pointer hover:text-text-muted hover:border-white/[0.12] transition-all duration-200" data-filter={`lang:${lang}`}>{lang}</button>
+  <div class="toc mb-6" data-reveal>
+    <div class="toc-title">Filter by language</div>
+    <div class="flex flex-wrap gap-2 text-sm" id="filters">
+      <button class="wiki-link font-semibold cursor-pointer" data-filter="all">All</button>
+      {languages.map(lang => (
+        <button class="wiki-link cursor-pointer opacity-70 hover:opacity-100 transition-opacity" data-filter={lang}>
+          {lang}
+        </button>
       ))}
     </div>
+  </div>
 
-    <!-- Project grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="project-grid">
-      {enriched.map((repo, i) => (
-        <div
-          class="project-item"
-          data-featured={repo.featured ? 'true' : 'false'}
-          data-language={repo.language || ''}
-        >
-          <ProjectCard repo={repo} index={Math.min(i, 4)} />
-        </div>
+  <table class="wiki-table" data-reveal>
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Description</th>
+        <th>Language</th>
+        <th>Category</th>
+      </tr>
+    </thead>
+    <tbody id="project-tbody">
+      {enriched.map((repo) => (
+        <tr class="project-row" data-language={repo.language || ''}>
+          <td>
+            <a href={repo.url} class="wiki-link font-medium" target="_blank" rel="noopener">{repo.name}</a>
+            {repo.highlight && <span class="text-xs text-[var(--wiki-accent)] ml-1">★</span>}
+          </td>
+          <td class="text-[var(--wiki-text-muted)]">{repo.tagline || repo.description || '—'}</td>
+          <td>
+            {repo.language && (
+              <span class="flex items-center gap-1.5 text-[var(--wiki-text-dim)]">
+                <span class="inline-block w-2 h-2 rounded-full" style={`background: ${getLanguageColor(repo.language)}`}></span>
+                {repo.language}
+              </span>
+            )}
+          </td>
+          <td class="text-[var(--wiki-text-dim)]">{repo.category || '—'}</td>
+        </tr>
       ))}
-    </div>
-  </section>
+    </tbody>
+  </table>
+
+  <div class="wiki-categories" data-reveal>
+    <strong>Categories:</strong>
+    {languages.map(lang => (
+      <a href="#" class="cursor-pointer" data-filter-link={lang}>{lang}</a>
+    ))}
+  </div>
 
   <script>
-    const filters = document.getElementById('filters');
-    const items = document.querySelectorAll('.project-item');
-    const activeClass = ['bg-accent-muted/20', 'border-accent-muted/40', 'text-accent-soft'];
-    const inactiveClass = ['bg-white/[0.03]', 'border-white/[0.06]', 'text-text-dim'];
+    const rows = document.querySelectorAll('.project-row');
+    const buttons = document.querySelectorAll('[data-filter]');
 
-    filters?.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('button');
-      if (!btn) return;
-
-      filters.querySelectorAll('button').forEach(b => {
-        activeClass.forEach(c => b.classList.remove(c));
-        inactiveClass.forEach(c => b.classList.add(c));
+    function filterBy(lang: string) {
+      rows.forEach(row => {
+        const el = row as HTMLElement;
+        el.style.display = (lang === 'all' || el.dataset.language === lang) ? '' : 'none';
       });
-      inactiveClass.forEach(c => btn.classList.remove(c));
-      activeClass.forEach(c => btn.classList.add(c));
-
-      const filter = btn.dataset.filter;
-
-      items.forEach(item => {
-        const el = item as HTMLElement;
-        let show = true;
-
-        if (filter === 'featured') {
-          show = el.dataset.featured === 'true';
-        } else if (filter?.startsWith('lang:')) {
-          show = el.dataset.language === filter.replace('lang:', '');
+      buttons.forEach(btn => {
+        const b = btn as HTMLElement;
+        if (b.dataset.filter === lang) {
+          b.classList.add('font-semibold');
+          b.classList.remove('opacity-70');
+        } else {
+          b.classList.remove('font-semibold');
+          b.classList.add('opacity-70');
         }
+      });
+    }
 
-        el.style.display = show ? '' : 'none';
+    document.getElementById('filters')?.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('[data-filter]') as HTMLElement;
+      if (btn?.dataset.filter) filterBy(btn.dataset.filter);
+    });
+
+    document.querySelectorAll('[data-filter-link]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        filterBy((link as HTMLElement).dataset.filterLink || 'all');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
   </script>

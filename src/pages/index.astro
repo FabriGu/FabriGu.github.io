@@ -1,8 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/Hero.astro';
-import FeaturedGrid from '../components/FeaturedGrid.astro';
-import TechStack from '../components/TechStack.astro';
 import { getRepos, enrichRepos, parseFeaturedYaml } from '../lib/github';
 import { readFileSync } from 'fs';
 import { join } from 'path';
@@ -11,28 +8,242 @@ const yamlText = readFileSync(join(process.cwd(), 'src/data/featured.yml'), 'utf
 const featured = parseFeaturedYaml(yamlText);
 const repos = await getRepos();
 const enriched = enrichRepos(repos, featured);
+const highlighted = enriched.filter(r => r.highlight);
+const repoCount = enriched.length;
 ---
 
-<Layout title="Fabrizio Guccione — Embedded Intelligence Designer">
-  <Hero />
-  <FeaturedGrid repos={enriched} />
-  <TechStack />
+<Layout title="Fabrizio Guccione — Fabripedia">
 
-  <section class="max-w-5xl mx-auto px-6 py-24">
-    <div data-reveal class="card max-w-xl mx-auto text-center">
-      <p class="label mb-3">get in touch</p>
-      <p class="text-text-muted text-sm leading-relaxed mb-6">
-        Always interested in installations, AI systems, and weird fabrication problems.
-      </p>
-      <div class="flex gap-3 justify-center flex-wrap">
-        <a href="https://www.linkedin.com/in/fabriziog/" target="_blank" rel="noopener" class="link-underline text-sm">linkedin</a>
-        <span class="text-text-dim">·</span>
-        <a href="https://x.com/fabricated_it" target="_blank" rel="noopener" class="link-underline text-sm">x</a>
-        <span class="text-text-dim">·</span>
-        <a href="https://www.instagram.com/fabricated.it/" target="_blank" rel="noopener" class="link-underline text-sm">instagram</a>
-        <span class="text-text-dim">·</span>
-        <a href="https://guccione.work" target="_blank" rel="noopener" class="link-underline text-sm">portfolio</a>
+  <!-- Article title -->
+  <h1 class="font-serif text-4xl md:text-5xl font-bold text-white tracking-tight leading-[0.95] mb-1" data-reveal>
+    Fabrizio Guccione
+  </h1>
+  <p class="text-sm text-[var(--wiki-text-dim)] mb-6 italic" data-reveal>
+    From Fabripedia, the personal encyclopedia
+  </p>
+
+  <div class="hatnote" data-reveal>
+    For the full portfolio, see <a href="https://guccione.work" class="wiki-link" target="_blank" rel="noopener">guccione.work</a>.
+    For source code, see <a href="https://github.com/FabriGu" class="wiki-link" target="_blank" rel="noopener">GitHub</a>.
+  </div>
+
+  <!-- Infobox -->
+  <div class="infobox" data-reveal>
+    <div class="infobox-header">Fabrizio Guccione</div>
+    <div class="infobox-image">
+      <div class="w-full aspect-square bg-gradient-to-br from-[#7c3aed]/20 to-[#a78bfa]/10 rounded flex items-center justify-center">
+        <span class="text-6xl font-serif font-bold text-[var(--wiki-accent)]">FG</span>
       </div>
     </div>
-  </section>
+    <div class="infobox-row">
+      <div class="infobox-label">Born</div>
+      <div class="infobox-value">Italy</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Based in</div>
+      <div class="infobox-value">Brooklyn, NY</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Education</div>
+      <div class="infobox-value">NYU ITP (MPS '26)<br/>NYU (BA Psychology, CS minor)</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Known for</div>
+      <div class="infobox-value">AI-driven interactive installations, speech-to-3D clothing, fabrication</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Title</div>
+      <div class="infobox-value">Embedded Intelligence Designer</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Languages</div>
+      <div class="infobox-value">Italian, English, Spanish</div>
+    </div>
+    <div class="infobox-row">
+      <div class="infobox-label">Website</div>
+      <div class="infobox-value"><a href="https://guccione.work" class="wiki-link" target="_blank" rel="noopener">guccione.work</a></div>
+    </div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc" data-reveal>
+    <div class="toc-title">Contents</div>
+    <ol class="toc-list">
+      <li><span class="toc-number">1</span><a href="#about">About</a></li>
+      <li><span class="toc-number">2</span><a href="#notable-works">Notable works</a>
+        <ul>
+          {highlighted.map((r, i) => (
+            <li><span class="toc-number">2.{i+1}</span><a href={`#${r.name}`}>{r.name}</a></li>
+          ))}
+        </ul>
+      </li>
+      <li><span class="toc-number">3</span><a href="#skills">Skills and tools</a></li>
+      <li><span class="toc-number">4</span><a href="#career">Career</a></li>
+      <li><span class="toc-number">5</span><a href="#education">Education</a></li>
+      <li><span class="toc-number">6</span><a href="#stats">GitHub statistics</a></li>
+      <li><span class="toc-number">7</span><a href="#reading">Reading list</a></li>
+      <li><span class="toc-number">8</span><a href="#external-links">External links</a></li>
+    </ol>
+  </div>
+
+  <!-- About -->
+  <h2 id="about" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    About <a href="https://github.com/FabriGu" class="wiki-edit" target="_blank">[github]</a>
+  </h2>
+  <p class="text-[var(--wiki-text)] leading-relaxed mb-4" data-reveal>
+    <strong>Fabrizio Guccione</strong> is an Embedded Intelligence Designer focused on AI-driven interactive
+    systems and generative pipelines. His work bridges machine learning, physical computing, and fabrication
+    to create immersive experiences that live in physical space — not just on screens.
+  </p>
+  <p class="text-[var(--wiki-text)] leading-relaxed mb-4" data-reveal>
+    He is an NYU ITP graduate with production experience across research labs, agencies, and fashion.
+    He currently runs ITP's Fabrication Shop, where he trains 300+ students on laser cutting, CNC milling,
+    3D printing, and machine embroidery. Previously he worked at McCann New York exploring generative AI
+    in campaigns, and at ADEAM constructing garments from sketch to runway.
+  </p>
+  <p class="text-[var(--wiki-text)] leading-relaxed mb-4" data-reveal>
+    His interests outside of work include playing guitar, cooking, and DJing.
+  </p>
+
+  <!-- Notable Works -->
+  <h2 id="notable-works" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Notable works
+  </h2>
+
+  {highlighted.map((repo) => (
+    <div data-reveal>
+      <h3 id={repo.name} class="font-serif text-lg font-bold text-white mt-6 mb-2">
+        {repo.name}
+        <a href={repo.url} class="wiki-edit" target="_blank" rel="noopener">[src]</a>
+      </h3>
+      <p class="text-[var(--wiki-text)] leading-relaxed mb-2">
+        {repo.tagline || repo.description}
+      </p>
+      <p class="text-sm text-[var(--wiki-text-dim)]">
+        {repo.language && (<><span class="inline-block w-2 h-2 rounded-full mr-1" style={`background: ${repo.language === 'Python' ? '#3572A5' : repo.language === 'JavaScript' ? '#f1e05a' : repo.language === 'TypeScript' ? '#3178c6' : repo.language === 'C++' ? '#f34b7d' : repo.language === 'Svelte' ? '#ff3e00' : '#7c3aed'}`}></span>{repo.language} · </>)}
+        {repo.category}
+      </p>
+    </div>
+  ))}
+
+  <p class="text-sm mt-6" data-reveal>
+    <a href="/projects" class="wiki-link">See all {repoCount} projects →</a>
+  </p>
+
+  <!-- Skills -->
+  <h2 id="skills" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Skills and tools
+  </h2>
+  <table class="wiki-table" data-reveal>
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Technologies</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>AI & Machine Learning</td><td>AI Agents, LLM Integration, Claude/GPT APIs, Stable Diffusion, CLIP, Whisper</td></tr>
+      <tr><td>Programming</td><td>Python, JavaScript, TypeScript, Java, C, Node.js, SQLite</td></tr>
+      <tr><td>Creative Coding</td><td>TouchDesigner, THREE.js, p5.js, Processing, GLSL</td></tr>
+      <tr><td>Computer Vision</td><td>MediaPipe, OpenCV, Pose Detection, Body Segmentation</td></tr>
+      <tr><td>Physical Computing</td><td>Arduino, ESP32, Raspberry Pi, OAK-D</td></tr>
+      <tr><td>Fabrication</td><td>Laser Cutting, CNC, 3D Printing, Machine Embroidery</td></tr>
+      <tr><td>3D & Design</td><td>Fusion 360, Figma, Blender, Unity</td></tr>
+      <tr><td>Fashion</td><td>Pattern Making, Sewing, Garment Construction, Draping</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Career -->
+  <h2 id="career" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Career
+  </h2>
+  <table class="wiki-table" data-reveal>
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th>Role</th>
+        <th>Organization</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2025–present</td><td>Fabrication Shop Staff</td><td>NYU ITP</td></tr>
+      <tr><td>2025</td><td>ITP Camp Counselor</td><td>NYU ITP</td></tr>
+      <tr><td>2025</td><td>Graduate Assistant</td><td>NYU ITP</td></tr>
+      <tr><td>2024</td><td>Creative Technology</td><td>McCann New York</td></tr>
+      <tr><td>2023</td><td>Junior Web Designer</td><td>NYU CREATE Lab</td></tr>
+      <tr><td>2022</td><td>Fashion Design Intern</td><td>ADEAM New York</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Education -->
+  <h2 id="education" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Education
+  </h2>
+  <table class="wiki-table" data-reveal>
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th>Degree</th>
+        <th>Institution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>2024–2026</td><td>MPS, Interactive Telecommunications Program (4.0 GPA)</td><td>New York University</td></tr>
+      <tr><td>2019–2024</td><td>BA, Psychology · CS Minor · Web Dev Minor (3.99 GPA)</td><td>New York University</td></tr>
+      <tr><td>2016–2019</td><td>International Baccalaureate (39/45)</td><td>British International School</td></tr>
+      <tr><td>2014–2016</td><td>—</td><td>United World College</td></tr>
+    </tbody>
+  </table>
+
+  <!-- GitHub Stats -->
+  <h2 id="stats" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    GitHub statistics
+  </h2>
+  <div class="flex flex-wrap gap-4 mb-6" data-reveal>
+    <img height="150" src="https://github-readme-stats.vercel.app/api?username=FabriGu&show_icons=true&title_color=c4b5fd&icon_color=a78bfa&text_color=e2e0eb&bg_color=14112a&border_color=7c3aed33&hide_border=false&count_private=true" alt="GitHub stats" />
+    <img height="150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=FabriGu&layout=compact&title_color=c4b5fd&text_color=e2e0eb&bg_color=14112a&border_color=7c3aed33&hide_border=false&langs_count=8" alt="Top languages" />
+  </div>
+
+  <h3 class="font-serif text-lg font-bold text-white mt-6 mb-3" data-reveal>Contribution graph</h3>
+  <div data-reveal>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/FabriGu/FabriGu/output/github-snake-dark.svg" />
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/FabriGu/FabriGu/output/github-snake.svg" />
+      <img alt="contribution snake" src="https://raw.githubusercontent.com/FabriGu/FabriGu/output/github-snake-dark.svg" width="100%" />
+    </picture>
+  </div>
+
+  <!-- Reading List -->
+  <h2 id="reading" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    Reading list <a href="/reading" class="wiki-edit">[full list]</a>
+  </h2>
+  <p class="text-[var(--wiki-text)] text-sm leading-relaxed mb-4" data-reveal>
+    A selection of books that have shaped how I think about design, systems, and intelligence.
+    <a href="/reading" class="wiki-link">See all →</a>
+  </p>
+
+  <!-- External Links -->
+  <h2 id="external-links" class="wiki-heading font-serif text-2xl font-bold text-white" data-reveal>
+    External links
+  </h2>
+  <ul class="list-disc list-inside text-sm space-y-1 text-[var(--wiki-text)]" data-reveal>
+    <li><a href="https://guccione.work" class="wiki-link" target="_blank" rel="noopener">Portfolio — guccione.work</a></li>
+    <li><a href="https://github.com/FabriGu" class="wiki-link" target="_blank" rel="noopener">GitHub — FabriGu</a></li>
+    <li><a href="https://www.linkedin.com/in/fabriziog/" class="wiki-link" target="_blank" rel="noopener">LinkedIn</a></li>
+    <li><a href="https://x.com/fabricated_it" class="wiki-link" target="_blank" rel="noopener">X — @fabricated_it</a></li>
+    <li><a href="https://www.instagram.com/fabricated.it/" class="wiki-link" target="_blank" rel="noopener">Instagram — @fabricated.it</a></li>
+  </ul>
+
+  <!-- Categories -->
+  <div class="wiki-categories" data-reveal>
+    <strong>Categories:</strong>
+    <a href="/projects">Embedded Intelligence</a> ·
+    <a href="/projects">NYU ITP</a> ·
+    <a href="/projects">AI/ML</a> ·
+    <a href="/projects">Physical Computing</a> ·
+    <a href="/projects">Interactive Art</a> ·
+    <a href="/projects">Fabrication</a> ·
+    <a href="/projects">Fashion Tech</a>
+  </div>
+
 </Layout>

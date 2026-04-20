@@ -6,7 +6,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "Embedded Intelligence Designer building AI-driven interactive systems. NYU ITP." } = Astro.props;
+const { title, description = "Fabrizio Guccione — Embedded Intelligence Designer. AI-driven interactive systems, physical computing, fabrication." } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,59 +17,45 @@ const { title, description = "Embedded Intelligence Designer building AI-driven 
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://fabrigu.github.io" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@fabricated_it" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <ViewTransitions />
   </head>
-  <body class="min-h-screen relative">
+  <body class="min-h-screen">
 
-    <!-- Ambient background orbs -->
-    <div class="fixed inset-0 -z-10 overflow-hidden">
-      <div class="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-violet-600/[0.07] blur-[120px]"></div>
-      <div class="absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full bg-purple-500/[0.05] blur-[150px]"></div>
-    </div>
-
-    <!-- Grain texture overlay -->
-    <div class="pointer-events-none fixed inset-0 z-50 opacity-[0.02]"
-         style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;); background-repeat: repeat; background-size: 256px 256px;">
-    </div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-40 bg-bg/80 backdrop-blur-md border-b border-white/[0.04]">
-      <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="/" class="text-base font-semibold text-accent-soft hover:text-white transition-colors duration-300" transition:name="logo">
-          fabrizio guccione
+    <!-- Top bar -->
+    <nav class="border-b border-[var(--wiki-border)] bg-[var(--wiki-surface)]">
+      <div class="max-w-[960px] mx-auto px-6 py-2.5 flex items-center justify-between text-sm">
+        <a href="/" class="font-serif text-base font-bold text-[var(--wiki-link)] hover:text-white transition-colors" transition:name="logo">
+          fabripedia
         </a>
-        <div class="flex gap-6 text-sm">
-          <a href="/" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">home</a>
-          <a href="/projects" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">projects</a>
-          <a href="/about" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">about</a>
-          <a href="https://github.com/FabriGu" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300" target="_blank" rel="noopener">github</a>
+        <div class="flex gap-5 text-[var(--wiki-text-dim)]">
+          <a href="/" class="hover:text-[var(--wiki-text)] transition-colors">article</a>
+          <a href="/projects" class="hover:text-[var(--wiki-text)] transition-colors">all projects</a>
+          <a href="/reading" class="hover:text-[var(--wiki-text)] transition-colors">reading list</a>
+          <a href="https://github.com/FabriGu" class="hover:text-[var(--wiki-text)] transition-colors" target="_blank" rel="noopener">github</a>
         </div>
       </div>
     </nav>
 
-    <main class="pt-20">
+    <main class="max-w-[960px] mx-auto px-6 py-8">
       <slot />
     </main>
 
-    <footer class="border-t border-white/[0.04] mt-32">
-      <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-dim">
-        <p>fabrizio guccione · brooklyn, ny</p>
-        <div class="flex gap-5">
-          <a href="https://www.linkedin.com/in/fabriziog/" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">linkedin</a>
-          <a href="https://x.com/fabricated_it" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">x</a>
-          <a href="https://www.instagram.com/fabricated.it/" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">instagram</a>
-          <a href="https://guccione.work" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">portfolio</a>
+    <footer class="border-t border-[var(--wiki-border)] mt-16">
+      <div class="max-w-[960px] mx-auto px-6 py-6 text-xs text-[var(--wiki-text-dim)] flex flex-col sm:flex-row justify-between gap-3">
+        <p>This page was last edited on {new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
+        <div class="flex gap-4">
+          <a href="https://www.linkedin.com/in/fabriziog/" class="wiki-link" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://x.com/fabricated_it" class="wiki-link" target="_blank" rel="noopener">X</a>
+          <a href="https://www.instagram.com/fabricated.it/" class="wiki-link" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://guccione.work" class="wiki-link" target="_blank" rel="noopener">Portfolio</a>
         </div>
       </div>
     </footer>
 
-    <!-- Scroll reveal script -->
     <script>
       function initReveal() {
         const observer = new IntersectionObserver(
@@ -81,7 +67,7 @@ const { title, description = "Embedded Intelligence Designer building AI-driven 
               }
             });
           },
-          { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+          { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
         );
         document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
       }
