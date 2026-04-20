@@ -4,23 +4,26 @@ export default {
   theme: {
     extend: {
       colors: {
-        purple: {
-          50: '#FAF5FF',
-          100: '#F3E8FF',
-          200: '#E9D5FF',
-          300: '#D8B4FE',
-          400: '#C084FC',
-          500: '#A855F7',
-          600: '#9333EA',
-          700: '#7C3AED',
-          800: '#6B21A8',
-          900: '#581C87',
-          950: '#1a1025',
+        bg: {
+          DEFAULT: '#0c0a1a',
+          card: '#14112a',
+          elevated: '#1c1838',
+        },
+        accent: {
+          DEFAULT: '#a78bfa',
+          soft: '#c4b5fd',
+          muted: '#7c3aed',
+          glow: '#8b5cf6',
+        },
+        text: {
+          DEFAULT: '#e2e0eb',
+          muted: '#9490ad',
+          dim: '#6b6789',
         },
       },
       fontFamily: {
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
-        mono: ['"Fira Code"', 'monospace'],
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"Fira Code"', 'ui-monospace', 'monospace'],
       },
     },
   },

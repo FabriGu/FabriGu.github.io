@@ -1,59 +1,49 @@
 - repo: spoken-wardrobe-2.1
   tagline: "Describe clothes with your voice. Get a 3D model."
-  category: "AI + Hardware"
-  emoji: "\U0001F5E3\uFE0F"
-  highlight: true
-
-- repo: genie
-  tagline: "Wish for anything. An AI agent makes it happen."
-  category: "AI Agents"
-  emoji: "\U0001F9DE"
-  highlight: true
-
-- repo: open-multi-agent
-  tagline: "Orchestrate teams of AI agents that collaborate on tasks."
-  category: "AI Agents"
-  emoji: "\U0001F916"
+  category: AI + Hardware
   highlight: true
 
 - repo: CollectiveComposite
-  tagline: "Thermal printers meet 3D printing meet machine learning."
-  category: "Interactive Art"
-  emoji: "\U0001F5A8\uFE0F"
+  tagline: "Step on a switch, a thermal printer outputs your portrait cell onto a collective lightbox."
+  category: Interactive Installation
+  highlight: true
+
+- repo: genie
+  tagline: "Speak a wish into a camera. An AI agent makes it happen."
+  category: AI Agents
+  highlight: true
+
+- repo: open-multi-agent
+  tagline: "Orchestrate teams of AI agents. Model-agnostic, TypeScript."
+  category: AI Agents
   highlight: true
 
 - repo: HTML_TAG
   tagline: "Play tag with HTML elements using your eyes."
-  category: "Creative Tools"
-  emoji: "\U0001F440"
+  category: Creative Tools
   highlight: true
 
 - repo: Clustering-Umap-Embeddings
   tagline: "See how images cluster in 2D and 3D with CLIP + UMAP."
-  category: "Machine Learning"
-  emoji: "\U0001F4CA"
+  category: Machine Learning
   highlight: true
 
 - repo: fabricatedit_room
   tagline: "Walk through a dithered digital art gallery with music."
-  category: "Interactive Art"
-  emoji: "\U0001F3A8"
+  category: Interactive Art
   highlight: false
 
 - repo: Portfolio_GameOfLife
-  tagline: "Floor is LLaVA — vision AI on Cloudflare Workers."
-  category: "AI + Web"
-  emoji: "\U0001F441\uFE0F"
-  highlight: false
-
-- repo: kosmos_aihack
-  tagline: "iOS AI hackathon project built in Swift."
-  category: "Mobile"
-  emoji: "\U0001F4F1"
+  tagline: "Floor is LLaVA — vision AI running on Cloudflare Workers."
+  category: AI + Web
   highlight: false
 
 - repo: ITPCamp_InstallationShowAllThings
-  tagline: "Body segmentation and edge detection web installation."
-  category: "Interactive Art"
-  emoji: "\U0001F3AD"
+  tagline: "Body segmentation and edge detection as web installation."
+  category: Interactive Art
+  highlight: false
+
+- repo: AutoCaptioning_Transformers
+  tagline: "Automatic image captioning using transformer models."
+  category: Machine Learning
   highlight: false

@@ -6,45 +6,112 @@
 
 @layer base {
   body {
-    @apply bg-purple-950 text-purple-100 font-sans;
+    @apply bg-bg text-text-DEFAULT font-sans antialiased;
   }
 
   ::selection {
-    @apply bg-purple-500/30;
+    @apply bg-accent-muted/30 text-white;
   }
 
   ::-webkit-scrollbar {
-    @apply w-2;
+    @apply w-1.5;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-purple-950;
+    @apply bg-bg;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-purple-700 rounded-full;
+    @apply bg-accent-muted/40 rounded-full;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-purple-950/50 border border-purple-700/30 rounded-2xl p-6
-           backdrop-blur-sm transition-all duration-300
-           hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/10;
+    @apply rounded-2xl p-6 md:p-8
+           bg-white/[0.03] backdrop-blur-sm
+           border border-white/[0.06]
+           transition-all duration-300 ease-out;
   }
 
-  .card-highlight {
-    @apply card bg-gradient-to-br from-purple-900/40 to-purple-950/60
-           border-purple-500/30 hover:border-purple-400/60;
+  .card:hover {
+    @apply bg-white/[0.06] border-white/[0.12];
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
   }
 
-  .badge {
-    @apply inline-block px-3 py-1 text-xs font-medium rounded-full
-           bg-purple-700/30 text-purple-300 border border-purple-600/20;
+  .card:hover .card-title {
+    @apply text-white;
+  }
+
+  .label {
+    @apply text-xs font-mono uppercase tracking-[0.2em] text-text-dim;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500
+    @apply bg-gradient-to-r from-accent-soft via-accent to-accent-muted
            bg-clip-text text-transparent;
   }
+
+  .link-underline {
+    @apply relative text-accent font-medium;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 h-px w-0 bg-accent transition-all duration-300;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+}
+
+/* Scroll reveal */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-reveal-delay="1"] { transition-delay: 0.1s; }
+[data-reveal-delay="2"] { transition-delay: 0.2s; }
+[data-reveal-delay="3"] { transition-delay: 0.3s; }
+[data-reveal-delay="4"] { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Animated gradient border for featured card */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes gradient-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+.gradient-border {
+  position: relative;
+  border-radius: 1rem;
+  padding: 1px;
+  background: conic-gradient(from var(--angle), #7c3aed, #a78bfa, #c4b5fd, #7c3aed);
+  animation: gradient-rotate 8s linear infinite;
+}
+
+.gradient-border > * {
+  border-radius: calc(1rem - 1px);
+  background: #0c0a1a;
 }

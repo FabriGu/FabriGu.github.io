@@ -10,18 +10,16 @@ export interface Repo {
   fork: boolean;
 }
 
-export interface FeaturedRepo {
+export interface FeaturedConfig {
   repo: string;
   tagline: string;
   category: string;
-  emoji: string;
   highlight: boolean;
 }
 
 export interface EnrichedRepo extends Repo {
   tagline?: string;
   category?: string;
-  emoji?: string;
   highlight: boolean;
   featured: boolean;
 }
@@ -62,19 +60,18 @@ export async function getRepos(): Promise<Repo[]> {
 
 export function enrichRepos(
   repos: Repo[],
-  featured: FeaturedRepo[],
+  featured: FeaturedConfig[],
 ): EnrichedRepo[] {
   const featuredMap = new Map(featured.map((f) => [f.repo, f]));
 
   return repos
-    .filter((r) => !r.fork)
+    .filter((r) => !r.fork) // never show forks
     .map((r) => {
       const feat = featuredMap.get(r.name);
       return {
         ...r,
         tagline: feat?.tagline,
         category: feat?.category,
-        emoji: feat?.emoji,
         highlight: feat?.highlight ?? false,
         featured: !!feat,
       };
@@ -103,14 +100,40 @@ const LANGUAGE_COLORS: Record<string, string> = {
 };
 
 export function getLanguageColor(lang: string | null): string {
-  if (!lang) return '#7C3AED';
-  return LANGUAGE_COLORS[lang] ?? '#7C3AED';
+  if (!lang) return '#7c3aed';
+  return LANGUAGE_COLORS[lang] ?? '#7c3aed';
 }
 
-export function getCategories(repos: EnrichedRepo[]): string[] {
-  const cats = new Set<string>();
-  for (const r of repos) {
-    if (r.category) cats.add(r.category);
+export function parseFeaturedYaml(text: string): FeaturedConfig[] {
+  const items: FeaturedConfig[] = [];
+  let current: any = null;
+
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+
+    if (trimmed.startsWith('- repo:')) {
+      if (current) items.push(current);
+      current = {
+        repo: trimmed.replace('- repo:', '').trim(),
+        tagline: '',
+        category: '',
+        highlight: false,
+      };
+    } else if (current && trimmed.startsWith('tagline:')) {
+      current.tagline = trimmed
+        .replace('tagline:', '')
+        .trim()
+        .replace(/^"|"$/g, '');
+    } else if (current && trimmed.startsWith('category:')) {
+      current.category = trimmed
+        .replace('category:', '')
+        .trim()
+        .replace(/^"|"$/g, '');
+    } else if (current && trimmed.startsWith('highlight:')) {
+      current.highlight = trimmed.replace('highlight:', '').trim() === 'true';
+    }
   }
-  return Array.from(cats).sort();
+  if (current) items.push(current);
+  return items;
 }

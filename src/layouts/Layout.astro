@@ -1,10 +1,12 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
+
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = "Creative technologist building at the intersection of AI, hardware, and interactive art." } = Astro.props;
+const { title, description = "Embedded Intelligence Designer building AI-driven interactive systems. NYU ITP." } = Astro.props;
 ---
 
 <!doctype html>
@@ -21,18 +23,32 @@ const { title, description = "Creative technologist building at the intersection
     <meta name="twitter:site" content="@fabricated_it" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <ViewTransitions />
   </head>
-  <body class="min-h-screen">
-    <nav class="fixed top-0 w-full z-50 bg-purple-950/80 backdrop-blur-md border-b border-purple-700/20">
-      <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="/" class="text-lg font-semibold gradient-text hover:opacity-80 transition-opacity">
-          fabri ~
+  <body class="min-h-screen relative">
+
+    <!-- Ambient background orbs -->
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+      <div class="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-violet-600/[0.07] blur-[120px]"></div>
+      <div class="absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full bg-purple-500/[0.05] blur-[150px]"></div>
+    </div>
+
+    <!-- Grain texture overlay -->
+    <div class="pointer-events-none fixed inset-0 z-50 opacity-[0.02]"
+         style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;); background-repeat: repeat; background-size: 256px 256px;">
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 bg-bg/80 backdrop-blur-md border-b border-white/[0.04]">
+      <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="text-base font-semibold text-accent-soft hover:text-white transition-colors duration-300" transition:name="logo">
+          fabrizio guccione
         </a>
         <div class="flex gap-6 text-sm">
-          <a href="/" class="text-purple-300 hover:text-purple-100 transition-colors">home</a>
-          <a href="/projects" class="text-purple-300 hover:text-purple-100 transition-colors">projects</a>
-          <a href="/about" class="text-purple-300 hover:text-purple-100 transition-colors">about</a>
-          <a href="https://github.com/FabriGu" class="text-purple-300 hover:text-purple-100 transition-colors" target="_blank">github</a>
+          <a href="/" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">home</a>
+          <a href="/projects" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">projects</a>
+          <a href="/about" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300">about</a>
+          <a href="https://github.com/FabriGu" class="text-text-muted hover:text-text-DEFAULT transition-colors duration-300" target="_blank" rel="noopener">github</a>
         </div>
       </div>
     </nav>
@@ -41,16 +57,36 @@ const { title, description = "Creative technologist building at the intersection
       <slot />
     </main>
 
-    <footer class="border-t border-purple-700/20 mt-24">
-      <div class="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-purple-400">
-        <p>made with curiosity by fabrizio guccione</p>
-        <div class="flex gap-4">
-          <a href="https://www.linkedin.com/in/fabriziog/" class="hover:text-purple-200 transition-colors" target="_blank">linkedin</a>
-          <a href="https://x.com/fabricated_it" class="hover:text-purple-200 transition-colors" target="_blank">x</a>
-          <a href="https://www.instagram.com/fabricated.it/" class="hover:text-purple-200 transition-colors" target="_blank">instagram</a>
-          <a href="https://github.com/FabriGu" class="hover:text-purple-200 transition-colors" target="_blank">github</a>
+    <footer class="border-t border-white/[0.04] mt-32">
+      <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-text-dim">
+        <p>fabrizio guccione · brooklyn, ny</p>
+        <div class="flex gap-5">
+          <a href="https://www.linkedin.com/in/fabriziog/" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">linkedin</a>
+          <a href="https://x.com/fabricated_it" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">x</a>
+          <a href="https://www.instagram.com/fabricated.it/" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">instagram</a>
+          <a href="https://guccione.work" class="hover:text-text-muted transition-colors duration-300" target="_blank" rel="noopener">portfolio</a>
         </div>
       </div>
     </footer>
+
+    <!-- Scroll reveal script -->
+    <script>
+      function initReveal() {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
+        );
+        document.querySelectorAll('[data-reveal]').forEach((el) => observer.observe(el));
+      }
+      initReveal();
+      document.addEventListener('astro:after-swap', initReveal);
+    </script>
   </body>
 </html>

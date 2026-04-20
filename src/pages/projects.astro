@@ -1,73 +1,46 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getRepos, enrichRepos, getCategories } from '../lib/github';
-import type { FeaturedRepo } from '../lib/github';
+import { getRepos, enrichRepos, parseFeaturedYaml } from '../lib/github';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const yamlPath = join(process.cwd(), 'src/data/featured.yml');
-const yamlText = readFileSync(yamlPath, 'utf-8');
-
-function parseSimpleYaml(text: string): FeaturedRepo[] {
-  const items: FeaturedRepo[] = [];
-  let current: any = null;
-  for (const line of text.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    if (trimmed.startsWith('- repo:')) {
-      if (current) items.push(current);
-      current = { repo: trimmed.replace('- repo:', '').trim(), tagline: '', category: '', emoji: '', highlight: false };
-    } else if (current && trimmed.startsWith('tagline:')) {
-      current.tagline = trimmed.replace('tagline:', '').trim().replace(/^"|"$/g, '');
-    } else if (current && trimmed.startsWith('category:')) {
-      current.category = trimmed.replace('category:', '').trim().replace(/^"|"$/g, '');
-    } else if (current && trimmed.startsWith('emoji:')) {
-      current.emoji = trimmed.replace('emoji:', '').trim().replace(/^"|"$/g, '');
-    } else if (current && trimmed.startsWith('highlight:')) {
-      current.highlight = trimmed.replace('highlight:', '').trim() === 'true';
-    }
-  }
-  if (current) items.push(current);
-  return items;
-}
-
-const featured = parseSimpleYaml(yamlText);
+const yamlText = readFileSync(join(process.cwd(), 'src/data/featured.yml'), 'utf-8');
+const featured = parseFeaturedYaml(yamlText);
 const repos = await getRepos();
 const enriched = enrichRepos(repos, featured);
-const categories = getCategories(enriched);
 
-// Get unique languages
 const languages = [...new Set(enriched.map(r => r.language).filter(Boolean))].sort() as string[];
 ---
 
-<Layout title="Projects — Fabrizio Guccione" description="All projects by Fabrizio Guccione — AI, interactive art, hardware, creative coding.">
-  <section class="max-w-6xl mx-auto px-6 py-16">
-    <h1 class="text-4xl font-bold gradient-text mb-2">all projects</h1>
-    <p class="text-purple-400 mb-8">{enriched.length} repos, auto-updated from GitHub</p>
+<Layout title="Projects — Fabrizio Guccione" description="All projects by Fabrizio Guccione. AI, interactive installations, hardware, creative coding.">
+  <section class="max-w-5xl mx-auto px-6 py-24">
+    <p data-reveal class="label mb-3">all work</p>
+    <h1 data-reveal data-reveal-delay="1" class="text-4xl font-bold text-accent-soft tracking-tight mb-2">
+      projects
+    </h1>
+    <p data-reveal data-reveal-delay="2" class="text-text-dim text-sm mb-10">
+      {enriched.length} original repos · auto-updated from GitHub · forks excluded
+    </p>
 
     <!-- Filter chips -->
-    <div class="flex flex-wrap gap-2 mb-8" id="filters">
-      <button class="badge bg-purple-600/40 border-purple-400/40 cursor-pointer" data-filter="all">all</button>
-      <button class="badge cursor-pointer hover:bg-purple-600/30 transition-colors" data-filter="featured">featured</button>
-      {categories.map(cat => (
-        <button class="badge cursor-pointer hover:bg-purple-600/30 transition-colors" data-filter={`cat:${cat}`}>{cat.toLowerCase()}</button>
-      ))}
-      {languages.slice(0, 8).map(lang => (
-        <button class="badge cursor-pointer hover:bg-purple-600/30 transition-colors" data-filter={`lang:${lang}`}>{lang.toLowerCase()}</button>
+    <div data-reveal data-reveal-delay="3" class="flex flex-wrap gap-2 mb-10" id="filters">
+      <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-accent-muted/20 border border-accent-muted/40 text-accent-soft cursor-pointer transition-all duration-200" data-filter="all">all</button>
+      <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-text-dim cursor-pointer hover:text-text-muted hover:border-white/[0.12] transition-all duration-200" data-filter="featured">featured</button>
+      {languages.slice(0, 6).map(lang => (
+        <button class="text-xs font-mono px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-text-dim cursor-pointer hover:text-text-muted hover:border-white/[0.12] transition-all duration-200" data-filter={`lang:${lang}`}>{lang}</button>
       ))}
     </div>
 
     <!-- Project grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="project-grid">
-      {enriched.map(repo => (
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="project-grid">
+      {enriched.map((repo, i) => (
         <div
           class="project-item"
           data-featured={repo.featured ? 'true' : 'false'}
-          data-category={repo.category || ''}
           data-language={repo.language || ''}
         >
-          <ProjectCard repo={repo} />
+          <ProjectCard repo={repo} index={Math.min(i, 4)} />
         </div>
       ))}
     </div>
@@ -76,16 +49,19 @@ const languages = [...new Set(enriched.map(r => r.language).filter(Boolean))].so
   <script>
     const filters = document.getElementById('filters');
     const items = document.querySelectorAll('.project-item');
+    const activeClass = ['bg-accent-muted/20', 'border-accent-muted/40', 'text-accent-soft'];
+    const inactiveClass = ['bg-white/[0.03]', 'border-white/[0.06]', 'text-text-dim'];
 
     filters?.addEventListener('click', (e) => {
       const btn = (e.target as HTMLElement).closest('button');
       if (!btn) return;
 
-      // Update active state
       filters.querySelectorAll('button').forEach(b => {
-        b.classList.remove('bg-purple-600/40', 'border-purple-400/40');
+        activeClass.forEach(c => b.classList.remove(c));
+        inactiveClass.forEach(c => b.classList.add(c));
       });
-      btn.classList.add('bg-purple-600/40', 'border-purple-400/40');
+      inactiveClass.forEach(c => btn.classList.remove(c));
+      activeClass.forEach(c => btn.classList.add(c));
 
       const filter = btn.dataset.filter;
 
@@ -95,8 +71,6 @@ const languages = [...new Set(enriched.map(r => r.language).filter(Boolean))].so
 
         if (filter === 'featured') {
           show = el.dataset.featured === 'true';
-        } else if (filter?.startsWith('cat:')) {
-          show = el.dataset.category === filter.replace('cat:', '');
         } else if (filter?.startsWith('lang:')) {
           show = el.dataset.language === filter.replace('lang:', '');
         }
